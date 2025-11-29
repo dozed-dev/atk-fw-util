@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atk-fw-util"
+version = "0.1.0"
+dependencies = []
+description = "Alientek T80 firmware decryptor, converter and flasher"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "dozed-dev" }]
+
+[project.scripts]
+atk-fw-util-cli = "main:main"

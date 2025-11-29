@@ -1,42 +1,6 @@
 #!/usr/bin/env python3
-import operator
-import struct
-from dataclasses import dataclass
+from .decrypt import decrypt_chunk, decrypt_firmware
 
-@dataclass
-class FirmwareHeader:
-    name: str
-    data_len: int
-    encrypt_pos: int
-    app_addr: int
-    app_ver: int
-    crc: int
-    fw_size: int
-    year: int
-    month: int
-    day: int
-
-FORMAT = "<16s B B H H H I H B B"
-
-def parse_header(data: bytes) -> FirmwareHeader:
-    fields = struct.unpack(FORMAT, data[:struct.calcsize(FORMAT)])
-    name = fields[0].split(b"\x00", 1)[0].decode("ascii", errors="ignore")
-    return FirmwareHeader(name, *fields[1:])
-
-def decrypt_chunk(encrypt_pos, bs):
-    bs = bytearray(bs)
-    if encrypt_pos > len(bs):
-        return bytes(bs)
-    encrypt_byte = bs[encrypt_pos]
-    while encrypt_byte >= len(bs):
-        encrypt_byte = encrypt_byte >> 1
-    xor_byte = bs[encrypt_byte]
-    #print(f"encrypt_pos = {hex(encrypt_pos)}; encrypt_byte = {hex(encrypt_byte)}; xor_byte = {hex(xor_byte)}")
-    for i in range(len(bs)):
-        if i != encrypt_pos and i != encrypt_byte:
-            bs[i] = ((bs[i] ^ xor_byte) - bs[encrypt_pos]) & 0xff # wrap around 8 bit
-    return bytes(bs)
-    
 def crypt_tests():
     in_crypt = bytes([
         0xe4, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -87,16 +51,10 @@ def crypt_tests():
     out = in_crypt
     assert decrypt_chunk(0x1e, in_crypt) == out
 
-CHUNK_SIZE = 0x3a
-def decrypt_firmware(path, decrypted_path):
-    with open(path, "rb") as src, open (decrypted_path, "wb") as decrypted:
-        header = parse_header(src.read(0x20))
-        while True:
-            chunk = src.read(CHUNK_SIZE)
-            if not chunk:
-                break
-            c = decrypt_chunk(header.encrypt_pos, chunk)
-            decrypted.write(c)
+def main():
+    decrypt_firmware('./T80P_v303_app_ch.atk', './T80P_v303_app_ch.bin')
+    crypt_tests()
+
+if __name__ == "__main__":
+    main()
     
-#decrypt_firmware('./T80P_v303_app_ch.atk', './T80P_v303_app_ch.bin')
-#crypt_tests()
