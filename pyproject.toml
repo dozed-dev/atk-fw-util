@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=69"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "atk-fw-util"
@@ -13,4 +13,9 @@ requires-python = ">=3.11"
 authors = [{ name = "dozed-dev" }]
 
 [project.scripts]
-atk-fw-util-cli = "main:main"
+atk-fw-util = "atk-fw-util.__main__:main"
+
+[tool.poetry]
+packages = [
+  { include = "atk-fw-util", from = "src" }
+]
