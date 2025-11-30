@@ -73,9 +73,9 @@ def get_usb_endpoints():
   endpoints = (ep_r, ep_w)
   return endpoints
 
-def flash(firmware):
+def flash(stream):
   endpoints = get_usb_endpoints()
-  header = firmware.read(HEADER_SIZE)
+  header = stream.read(HEADER_SIZE)
 
   print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_GET_DEVICE_INFO, 0, []))
   print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_SET_FIRMWARE_INFO, 0, header))
@@ -83,7 +83,7 @@ def flash(firmware):
 
   sequence = 0
   while True:
-    chunk = firmware.read(CHUNK_SIZE)
+    chunk = stream.read(CHUNK_SIZE)
     if not chunk:
       break
     print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_FIRMWARE_DATA, sequence, chunk))
