@@ -8,9 +8,10 @@
     perSystem = {pkgs, ...}: {
       devShells.default =
         pkgs.mkShell {
-          packages = [
-            pkgs.python3
-            pkgs.python3Packages.pyusb
+          packages = with pkgs; [
+            python3
+            python3Packages.pyusb
+            poetry
           ];
           shellHook = ''
             python -m venv .venv; source .venv/bin/activate
