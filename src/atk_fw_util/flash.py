@@ -90,4 +90,3 @@ def flash(stream):
     sequence += 1
     sequence %= 256
 
-  print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_END_FIRMWARE_DATA, 0, []))
