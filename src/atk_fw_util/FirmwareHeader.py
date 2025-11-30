@@ -16,7 +16,7 @@ class FirmwareHeader:
     day: int
 
 def parse_header(data: bytes) -> FirmwareHeader:
-    fields = struct.unpack(HEADER_FORMAT, data[:struct.calcsize(FORMAT)])
+    fields = struct.unpack(HEADER_FORMAT, data[:struct.calcsize(HEADER_FORMAT)])
     name = fields[0].split(b"\x00", 1)[0].decode("ascii", errors="ignore")
     return FirmwareHeader(name, *fields[1:])
 

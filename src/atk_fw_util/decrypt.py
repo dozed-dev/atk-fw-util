@@ -15,13 +15,12 @@ def decrypt_chunk(encrypt_pos, bs):
             bs[i] = ((bs[i] ^ xor_byte) - bs[encrypt_pos]) & 0xff # wrap around 8 bit
     return bytes(bs)
 
-def decrypt_firmware(path, decrypted_path):
-    with open(path, "rb") as src, open (decrypted_path, "wb") as decrypted:
-        header = parse_header(src.read(0x20))
-        while True:
-            chunk = src.read(CHUNK_SIZE)
-            if not chunk:
-                break
-            c = decrypt_chunk(header.encrypt_pos, chunk)
-            decrypted.write(c)
+def decrypt_firmware(in_stream, out_stream):
+    header = parse_header(in_stream.read(0x20))
+    while True:
+        chunk = in_stream.read(CHUNK_SIZE)
+        if not chunk:
+            break
+        c = decrypt_chunk(header.encrypt_pos, chunk)
+        out_stream.write(c)
 
