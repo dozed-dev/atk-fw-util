@@ -81,7 +81,7 @@ def flash(stream):
   chunk_size = header.data_len
 
   print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_GET_DEVICE_INFO, 0, [], chunk_size))
-  print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_SET_FIRMWARE_INFO, 0, header, chunk_size))
+  print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_SET_FIRMWARE_INFO, 0, raw_header, chunk_size))
   print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_START_FIRMWARE_DATA, 0, [], chunk_size))
 
   sequence = 0
