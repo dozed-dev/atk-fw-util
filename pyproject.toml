@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [project]
 name = "atk-fw-util"
 version = "0.1.0"
-dependencies = []
+dependencies = [ "pyusb" ]
 description = "Alientek T80 firmware decryptor, converter and flasher"
 readme = "README.md"
 license = "MIT"
