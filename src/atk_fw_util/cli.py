@@ -30,21 +30,24 @@ def cmd_flash(args):
         flash(fin)
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog='atk-fw-util',
+        description='A collection of utils for working with Alientek firmware')
+
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    c_dec = sub.add_parser("decrypt")
-    c_dec.add_argument("input")
-    c_dec.add_argument("output", nargs="?")
+    c_dec = sub.add_parser("decrypt", help="Decrypt .atk firmware")
+    c_dec.add_argument("atk_firmware", help="Path to atk firmware to decrypt")
+    c_dec.add_argument("output", nargs="?", help="Path to output file")
     c_dec.set_defaults(func=cmd_decrypt)
 
-    c_pack = sub.add_parser("pack-atk")
-    c_pack.add_argument("input")
-    c_pack.add_argument("output", nargs="?")
+    c_pack = sub.add_parser("pack-atk", help="Convert raw binary to .atk file for flashing over usb")
+    c_pack.add_argument("raw_binary", help="Path to raw binary to convert to .atk")
+    c_pack.add_argument("atk_output", nargs="?")
     c_pack.set_defaults(func=cmd_pack)
 
-    c_flash = sub.add_parser("flash")
-    c_flash.add_argument("input")
+    c_flash = sub.add_parser("flash", help="Flash .atk over usb")
+    c_flash.add_argument("firmware_file", help="Path to firmware to flash")
     c_flash.set_defaults(func=cmd_flash)
 
     args = parser.parse_args()
