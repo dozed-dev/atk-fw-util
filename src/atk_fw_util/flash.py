@@ -1,6 +1,7 @@
 import usb.core
 import usb.util
 from .defs import CHUNK_SIZE, HEADER_SIZE
+from .FirmwareHeader import parse_header
 
 def calc_crc16(data):
   crc = 0xffff
@@ -13,9 +14,9 @@ def calc_crc16(data):
               crc >>= 1
   return crc & 0xffff
 
-def build_packet(device_addr, function, sequence, data):
-  if len(data) > CHUNK_SIZE:
-    raise ValueError("len(data) must be <= " + CHUNK_SIZE)
+def build_packet(device_addr, function, sequence, data, chunk_size = CHUNK_SIZE):
+  if len(data) > chunk_size:
+    raise ValueError("len(data) must be <= " + chunk_size)
   packet = [device_addr, function, sequence, len(data)] + list(data)
   crc = calc_crc16(packet)
   packet += [crc & 0xff, crc >> 8]
@@ -75,18 +76,19 @@ def get_usb_endpoints():
 
 def flash(stream):
   endpoints = get_usb_endpoints()
-  header = stream.read(HEADER_SIZE)
+  raw_header = stream.read(HEADER_SIZE)
+  header = parse_header(raw_header)
 
-  print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_GET_DEVICE_INFO, 0, []))
-  print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_SET_FIRMWARE_INFO, 0, header))
-  print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_START_FIRMWARE_DATA, 0, []))
+  print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_GET_DEVICE_INFO, 0, [], chunk_size))
+  print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_SET_FIRMWARE_INFO, 0, header, chunk_size))
+  print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_START_FIRMWARE_DATA, 0, [], chunk_size))
 
   sequence = 0
   while True:
-    chunk = stream.read(CHUNK_SIZE)
+    chunk = stream.read(header.data_len)
     if not chunk:
       break
-    print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_FIRMWARE_DATA, sequence, chunk))
+    print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_FIRMWARE_DATA, sequence, chunk, chunk_size))
     sequence += 1
     sequence %= 256
 
