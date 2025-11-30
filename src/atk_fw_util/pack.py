@@ -10,7 +10,7 @@ def pack(in_stream, out_stream):
     header = FirmwareHeader(name="ATK-PTT80P",
                             fw_size=size,
                             encrypt_pos=0xff, # this encrypt pos bypasses encryption completely
-                            crc=0, # crc is 0 for now
+                            crc=0, # crc is 0 for now (probably not important needed for flashing?)
                             data_len=CHUNK_SIZE,
                             app_addr=1, app_ver=1,  
                             year=2025, month=11, day=30)
