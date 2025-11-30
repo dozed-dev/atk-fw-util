@@ -2,7 +2,7 @@
 
 import usb.core
 import usb.util
-import .consts
+from .defs import CHUNK_SIZE, HEADER_SIZE
 
 def calc_crc16(data):
   crc = 0xffff
@@ -16,8 +16,8 @@ def calc_crc16(data):
   return crc & 0xffff
 
 def build_packet(device_addr, function, sequence, data):
-  if len(data) > consts.CHUNK_SIZE:
-    raise ValueError("len(data) must be <= " + consts.CHUNK_SIZE)
+  if len(data) > CHUNK_SIZE:
+    raise ValueError("len(data) must be <= " + CHUNK_SIZE)
   packet = [device_addr, function, sequence, len(data)] + list(data)
   crc = calc_crc16(packet)
   packet += [crc & 0xff, crc >> 8]
@@ -77,7 +77,7 @@ def get_usb_endpoints():
 
 def flash(firmware):
   endpoints = get_usb_endpoints()
-  header = firmware.read(consts.HEADER_SIZE)
+  header = firmware.read(HEADER_SIZE)
 
   print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_GET_DEVICE_INFO, 0, []))
   print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_SET_FIRMWARE_INFO, 0, header))
@@ -85,8 +85,8 @@ def flash(firmware):
 
   sequence = 0
   while True:
-    chunk = firmware.read(consts.CHUNK_SIZE)
-    if !chunk:
+    chunk = firmware.read(CHUNK_SIZE)
+    if not chunk:
       break
     print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_FIRMWARE_DATA, sequence, chunk))
     sequence += 1

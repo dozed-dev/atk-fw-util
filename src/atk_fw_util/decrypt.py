@@ -1,5 +1,5 @@
 from .FirmwareHeader import parse_header
-import consts
+from .defs import CHUNK_SIZE
 
 def decrypt_chunk(encrypt_pos, bs):
     bs = bytearray(bs)
@@ -19,7 +19,7 @@ def decrypt_firmware(path, decrypted_path):
     with open(path, "rb") as src, open (decrypted_path, "wb") as decrypted:
         header = parse_header(src.read(0x20))
         while True:
-            chunk = src.read(consts.CHUNK_SIZE)
+            chunk = src.read(CHUNK_SIZE)
             if not chunk:
                 break
             c = decrypt_chunk(header.encrypt_pos, chunk)
