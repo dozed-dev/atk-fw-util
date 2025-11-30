@@ -16,17 +16,17 @@ def _default_output(input_path, new_ext):
     return str(p.with_suffix(new_ext))
 
 def cmd_decrypt(args):
-    out = args.output or _default_output(args.input, ".bin")
-    with _stream(args.input, "rb") as fin, _stream(out, "wb") as fout:
+    out = args.output or _default_output(args.atk_firmware, ".bin")
+    with _stream(args.atk_firmware, "rb") as fin, _stream(out, "wb") as fout:
         decrypt_firmware(fin, fout)
 
 def cmd_pack(args):
-    out = args.output or _default_output(args.input, ".atk")
-    with _stream(args.input, "rb") as fin, _stream(out, "wb") as fout:
+    out = args.atk_output or _default_output(args.raw_binary, ".atk")
+    with _stream(args.raw_binary, "rb") as fin, _stream(out, "wb") as fout:
         pack(fin, fout)
 
 def cmd_flash(args):
-    with _stream(args.input, "rb") as fin:
+    with _stream(args.firmware_file, "rb") as fin:
         flash(fin)
 
 def main():

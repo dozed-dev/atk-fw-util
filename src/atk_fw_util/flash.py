@@ -48,8 +48,8 @@ def parse_packet(packet):
     raise ValueError(f"wrong crc: {crc} != {calculated_crc}")
   return (device_addr, function, sequence, data)
 
-def do_request_response(eps, device_addr, function, sequence, data):
-  request_packet = build_packet(device_addr, function, sequence, data)
+def do_request_response(eps, device_addr, function, sequence, data, chunk_size=CHUNK_SIZE):
+  request_packet = build_packet(device_addr, function, sequence, data, chunk_size)
   eps[1].write(request_packet, timeout=USB_TIMEOUT)
   raw_response = eps[0].read(64, timeout=USB_TIMEOUT)
   return parse_packet(raw_response)
@@ -78,6 +78,7 @@ def flash(stream):
   endpoints = get_usb_endpoints()
   raw_header = stream.read(HEADER_SIZE)
   header = parse_header(raw_header)
+  chunk_size = header.data_len
 
   print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_GET_DEVICE_INFO, 0, [], chunk_size))
   print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_SET_FIRMWARE_INFO, 0, header, chunk_size))
