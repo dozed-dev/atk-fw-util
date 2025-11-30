@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import usb.core
 import usb.util
 from .defs import CHUNK_SIZE, HEADER_SIZE
