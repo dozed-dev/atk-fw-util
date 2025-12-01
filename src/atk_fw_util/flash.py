@@ -93,4 +93,5 @@ def flash(stream):
     sequence += 1
     sequence %= 256
 
-  print(do_request_response(endpoints, TARGET_DEVICE_ADDR, FUNCTION_END_FIRMWARE_DATA, 0, []))
+  # do not expect a response
+  endpoints[1].write(build_packet(TARGET_DEVICE_ADDR, FUNCTION_END_FIRMWARE_DATA, 0, [], chunk_size), timeout=USB_TIMEOUT)
